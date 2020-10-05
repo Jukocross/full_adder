@@ -1,0 +1,61 @@
+module au_top (
+    input clk,              // 100MHz clock
+    input rst_n,            // reset button (active low)
+    output led [8],         // 8 user controllable LEDs
+    input usb_rx,           // USB->Serial input
+    output usb_tx,          // USB->Serial output
+    output io_led [3][8],   // LEDs on IO Shield
+    output io_seg [8],      // 7-segment LEDs on IO Shield
+    output io_sel [4],      // Digit select on IO Shield
+    //input io_button [5],    // 5 buttons on IO Shield
+    //input io_dip [3][8],     // DIP switches on IO Shield
+    input custominA[1],
+    input custominB[1],
+    input custominC[1]
+  ) {
+  
+  sig rst;                  // reset signal
+  full_adder fulladder;
+  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));
+  seq_plus_one plus_one(.clk(slowclock.value), .rst(custominA[0] | custominB[0] |custominC[0]));
+  //seven_seg seg;
+  .clk(clk) {
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    reset_conditioner reset_cond;
+  }
+  
+  always {
+    reset_cond.in = ~rst_n; // input raw inverted reset signal
+    rst = reset_cond.out;   // conditioned reset
+    
+    usb_tx = usb_rx;        // loop serial port
+    
+    led = 8h00;             // turn LEDs off
+    
+    io_led = 3x{{8h00}};    // turn LEDs off
+    io_seg = 8hff;          // turn segments off
+    io_sel = 4hf;           // select no digits
+    
+    //fulladder.x = customin[0];//External input
+    //fulladder.y = customin[1];//External input
+    //fulladder.cin = customin[2];//External input
+    
+    fulladder.x = plus_one.out[0] | custominA[0];
+    fulladder.y = plus_one.out[1] | custominB[0];
+    fulladder.cin = plus_one.out[2] | custominC[0];
+    
+    //segValue[0]  = plus_one.out[0] | custominA[0];
+    //segValue[1] = plus_one.out[1] | custominB[0];
+    //segValue[2] = plus_one.out[2] | custominC[0];
+    
+    //seg.char = segValue[0];
+    //io_seg = ~seg.segs;
+    //io_sel = ~4h1;
+        
+    //customout[0] = fulladder.s; //Put value into external
+    //customout[1] = fulladder.cout; //Put value into external
+    io_led[2][1] = fulladder.s;
+    io_led[2][0] = fulladder.cout;
+  }
+}

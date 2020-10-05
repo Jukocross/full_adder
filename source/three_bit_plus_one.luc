@@ -1,0 +1,9 @@
+module three_bit_plus_one (
+    input in[3],
+    output out[3]
+  ) {
+
+  always {
+    out = in + 1;
+  }
+}
