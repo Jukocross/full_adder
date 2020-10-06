@@ -13,9 +13,7 @@ module au_top_0 (
     output reg [23:0] io_led,
     output reg [7:0] io_seg,
     output reg [3:0] io_sel,
-    input [0:0] custominA,
-    input [0:0] custominB,
-    input [0:0] custominC
+    input [2:0] customin
   );
   
   
@@ -45,7 +43,8 @@ module au_top_0 (
   wire [3-1:0] M_plus_one_out;
   seq_plus_one_3 plus_one (
     .clk(M_slowclock_value),
-    .rst(custominA[0+0-:1] | custominB[0+0-:1] | custominC[0+0-:1]),
+    .rst(customin[0+0-:1] | customin[1+0-:1] | customin[2+0-:1]),
+    .switchOn(customin[0+0-:1] | customin[1+0-:1] | customin[2+0-:1]),
     .out(M_plus_one_out)
   );
   
@@ -56,6 +55,25 @@ module au_top_0 (
     .in(M_reset_cond_in),
     .out(M_reset_cond_out)
   );
+  wire [2-1:0] M_seven_seg_ctr_value;
+  counter_5 seven_seg_ctr (
+    .clk(clk),
+    .rst(rst),
+    .value(M_seven_seg_ctr_value)
+  );
+  
+  wire [4-1:0] M_digit_out;
+  seven_seg_select_digit_6 digit (
+    .in(M_seven_seg_ctr_value),
+    .out(M_digit_out)
+  );
+  
+  wire [8-1:0] M_seven_value_out;
+  seven_seg_select_value_7 seven_value (
+    .in(M_seven_seg_ctr_value),
+    .value(M_plus_one_out | customin),
+    .out(M_seven_value_out)
+  );
   
   always @* begin
     M_reset_cond_in = ~rst_n;
@@ -63,11 +81,11 @@ module au_top_0 (
     usb_tx = usb_rx;
     led = 8'h00;
     io_led = 24'h000000;
-    io_seg = 8'hff;
-    io_sel = 4'hf;
-    M_fulladder_x = M_plus_one_out[0+0-:1] | custominA[0+0-:1];
-    M_fulladder_y = M_plus_one_out[1+0-:1] | custominB[0+0-:1];
-    M_fulladder_cin = M_plus_one_out[2+0-:1] | custominC[0+0-:1];
+    M_fulladder_x = M_plus_one_out[0+0-:1] | customin[0+0-:1];
+    M_fulladder_y = M_plus_one_out[1+0-:1] | customin[1+0-:1];
+    M_fulladder_cin = M_plus_one_out[2+0-:1] | customin[2+0-:1];
+    io_seg = M_seven_value_out;
+    io_sel = M_digit_out;
     io_led[16+1+0-:1] = M_fulladder_s;
     io_led[16+0+0-:1] = M_fulladder_cout;
   end

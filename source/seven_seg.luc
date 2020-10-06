@@ -1,12 +1,12 @@
 module seven_seg (
-    input char[3],
-    output segs[7]
+    input char[1],//1 Bit Input that take in 0 or 1
+    output segs[8]//8 bit output define below.
   ) {
 
   always {
     case (char) {
-      0: segs = 7b0111111;
-      1: segs = 7b0000110;
-      default: segs = 7b0000000;}
+      0: segs = 8b11000000;//The input for seg which represent 0
+      1: segs = 8b11111001;//The input for seg which represetn 1
+      default: segs = 8hFF;}// The default is set to 0
   }
 }

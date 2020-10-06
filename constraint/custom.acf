@@ -1,11 +1,6 @@
-//pin customin[0] A36;//A
-//pin customin[1] A39;//B 
-//pin customin[2] A42;//cin
-//pin customout[0] A15;//S 
-//pin customout[1] A9;
-pin custominA[0] C9 pulldown;
-pin custominB[0] C6 pulldown;
-pin custominC[0] C3 pulldown;
+pin customin[0] C9 pulldown;//Custom input as A
+pin customin[1] C6 pulldown;//Custom input as B
+pin customin[2] C3 pulldown;//Custom input as Cin
 
 pin clk CLOCK;
 clock clk 100MHz;

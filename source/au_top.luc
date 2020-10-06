@@ -7,23 +7,25 @@ module au_top (
     output io_led [3][8],   // LEDs on IO Shield
     output io_seg [8],      // 7-segment LEDs on IO Shield
     output io_sel [4],      // Digit select on IO Shield
-    //input io_button [5],    // 5 buttons on IO Shield
-    //input io_dip [3][8],     // DIP switches on IO Shield
-    input custominA[1],
-    input custominB[1],
-    input custominC[1]
+    input customin[3]
   ) {
   
   sig rst;                  // reset signal
-  full_adder fulladder;
-  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));
-  seq_plus_one plus_one(.clk(slowclock.value), .rst(custominA[0] | custominB[0] |custominC[0]));
-  //seven_seg seg;
+  full_adder fulladder; //Declare CL(Full Adder)
+  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));//Declare a slower clock for SL
+  seq_plus_one plus_one(.clk(slowclock.value), .rst(customin[0] | customin[1] |customin[2]), .switchOn(customin[0] | customin[1] |customin[2]));
+  /*Declear SL with slower clock  and the custom inputs as  rst and also the switch to change the state from IDLE to RUNNING*/
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
+    .rst(rst) {
+    counter seven_seg_ctr(#SIZE(2), #DIV(10));//The counter for the seven segment that iterate through the size of 2bits.
+      }
+    
   }
+  seven_seg_select_digit digit(.in(seven_seg_ctr.value));//Declare the selector for the seven segment digit position
+  seven_seg_select_value seven_value(.in(seven_seg_ctr.value), .value(plus_one.out|customin));//Declear the selector for the seven segment value.
   
   always {
     reset_cond.in = ~rst_n; // input raw inverted reset signal
@@ -34,27 +36,16 @@ module au_top (
     led = 8h00;             // turn LEDs off
     
     io_led = 3x{{8h00}};    // turn LEDs off
-    io_seg = 8hff;          // turn segments off
-    io_sel = 4hf;           // select no digits
+    //io_seg = 8hff;          // turn segments off
+    //io_sel = 4hf;           // select no digits
     
-    //fulladder.x = customin[0];//External input
-    //fulladder.y = customin[1];//External input
-    //fulladder.cin = customin[2];//External input
+    fulladder.x = plus_one.out[0] | customin[0];//Output from SL or custom input as A
+    fulladder.y = plus_one.out[1] | customin[1];//Output from SL or custom input as B
+    fulladder.cin = plus_one.out[2] | customin[2];//Output from SL or custom input as Cin
     
-    fulladder.x = plus_one.out[0] | custominA[0];
-    fulladder.y = plus_one.out[1] | custominB[0];
-    fulladder.cin = plus_one.out[2] | custominC[0];
-    
-    //segValue[0]  = plus_one.out[0] | custominA[0];
-    //segValue[1] = plus_one.out[1] | custominB[0];
-    //segValue[2] = plus_one.out[2] | custominC[0];
-    
-    //seg.char = segValue[0];
-    //io_seg = ~seg.segs;
-    //io_sel = ~4h1;
-        
-    //customout[0] = fulladder.s; //Put value into external
-    //customout[1] = fulladder.cout; //Put value into external
+    io_seg = seven_value.out;//Assign the value to the seven segment
+    io_sel = digit.out;//Assign the selected digit position for the respective value;
+
     io_led[2][1] = fulladder.s;
     io_led[2][0] = fulladder.cout;
   }

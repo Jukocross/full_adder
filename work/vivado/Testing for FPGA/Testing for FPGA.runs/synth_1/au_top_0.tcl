@@ -85,9 +85,13 @@ OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
   {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/counter_2.v}
+  {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/counter_5.v}
   {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/full_adder_1.v}
   {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/reset_conditioner_4.v}
   {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/seq_plus_one_3.v}
+  {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/seven_seg_8.v}
+  {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/seven_seg_select_digit_6.v}
+  {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/seven_seg_select_value_7.v}
   {C:/Users/YK/Desktop/School/50.002 Comp Struc/Alchitry/Testing for FPGA/work/vivado/Testing for FPGA/Testing for FPGA.srcs/sources_1/imports/verilog/au_top_0.v}
 }
 OPTRACE "Adding files" END { }

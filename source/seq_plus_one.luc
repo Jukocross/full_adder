@@ -1,27 +1,31 @@
 module seq_plus_one (
     input clk,  // clock
-    input rst,  // reset
-    output out[3]
+    input rst,  // reset button
+    input switchOn, //Input to condition the state below.
+    output out[3]//3 bit output towards the CL(Full Adder)
   ) {
-  dff register_1[3](#INIT(0), .clk(clk), .rst(rst));
+  dff register_1[3](#INIT(0), .clk(clk), .rst(rst));//Initializing the SL
   //three_bit_plus_one plus_one;
-  fsm value_controller(.clk(clk), .rst(rst)) = {S0, S1};
+  fsm value_controller(.clk(clk), .rst(rst)) = {RUNNING, IDLE};////Initializing the FSM
   always {
-    register_1.d = 3b000;
+    register_1.d = 3b000;//Define the default value
     case (value_controller.q){
-      value_controller.S0:
-      if (register_1.q <= 3b111) {
-        register_1.d = register_1.q +1;
-          value_controller.d = value_controller.S0;
-        }else {
-        value_controller.d = value_controller.S1;
+      value_controller.RUNNING://RUNNING state when bit is less then 111
+      if (register_1.q != 3b111) {
+        register_1.d = register_1.q +1;//Increment by 1
+        value_controller.d = value_controller.RUNNING;
+        }
+      else {
+        value_controller.d = value_controller.IDLE;//As it change the state to IDLE 
+        }
+      value_controller.IDLE://IDLE State
+      if (switchOn > 0){//If there is any input
+        value_controller.d = value_controller.RUNNING;//Change state to RUNNING
           }
-      value_controller.S1:
-      register_1.d = 3b000;
-      value_controller.d = value_controller.S0;
+        else {
+        value_controller.d = value_controller.IDLE;//Stay IDLE
+          }
       }
-    //plus_one.in = register_1.q;
-    //register_1.d = plus_one.out;
-    out = register_1.q;
+    out = register_1.q;//Output to CL(Full Adder)
   }
 }
